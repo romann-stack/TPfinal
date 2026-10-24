@@ -1,12 +1,57 @@
 package ar.edu.ungs.prog2.smartgrids;
 
-public class PlantaEolica {
-	/*
-	 * Atributos propios. Solar: superficie cubierta, cantidad de paneles y horas de radiación diaria. 
-Eólica: cantidad de aerogeneradores, altura de las torres y velocidad mínima de viento. 
-Hidráulica: cantidad de turbinas y capacidad del embalse. 
-• cuotaMinima() : double. En la solar es capacidad máxima × eficiencia × horas de radiación / 
-24. En la eólica y en la hidráulica es capacidad máxima × eficiencia. 
-• velocidadMinimaViento() : double. Solo la eólica. Es la velocidad de viento mínima para 
-poder generar.*/
+import java.time.LocalDateTime;
+
+public class PlantaEolica extends PlantaRenovable{
+	private int aeroGeneradores;
+	private double alturaTorres;
+	private double velocidadMinima;
+	public PlantaEolica(String nombre, String direccion, double capacidadMaxima, boolean activa,
+			LocalDateTime fechaPuestaFuncionamiento, String fuentePrimaria, double eficienciaPromedio, 
+			int aeroGeneradores, double alturaTorres, double velocidadMinima) {
+		super(nombre, direccion, capacidadMaxima, activa, fechaPuestaFuncionamiento, fuentePrimaria, eficienciaPromedio);
+		if (aeroGeneradores <= 0) {
+			throw new IllegalArgumentException("Los aerogeneradores deben ser mayores que cero");
+		}
+		if (alturaTorres <= 0 || !Double.isFinite(alturaTorres)) {
+			throw new IllegalArgumentException("La altura de las torres deben ser mayor que cero y finita");
+		}
+		if (velocidadMinima <= 0 || !Double.isFinite(velocidadMinima)) {
+			throw new IllegalArgumentException("La velocidad minima debe ser mayor que cero y finito");
+		}
+		this.aeroGeneradores = aeroGeneradores;
+		this.alturaTorres = alturaTorres;
+		this.velocidadMinima = velocidadMinima;
+		this.eficienciaPromedio = eficienciaPromedio;
+		this.fuentePrimaria = fuentePrimaria;
+	}
+
+	@Override
+	public double cuotaMinima() {
+		double cuotaMin = this.capacidadMaxima * this.eficienciaPromedio;
+		return cuotaMin;
+	}
+	@Override
+	public boolean cumpleCuota(Monitoreo registro) {
+		if (registro == null) {
+		    throw new IllegalArgumentException(
+		        "El monitoreo no puede ser null."
+		    );
+		}
+			return registro.energiaGenerada() >= cuotaMinima();
+	}
+	public int aeroGeneradores() {
+		return this.aeroGeneradores;}
+	public double alturaTorres() {
+		return this.alturaTorres;
+	}
+	public double velocidadMinima() {
+		return this.velocidadMinima;
+	}
+	public String fuentePrimaria() {
+		return this.fuentePrimaria;
+	}
+	public double eficienciaPromedio() {
+		return this.eficienciaPromedio;
+	}
 }
